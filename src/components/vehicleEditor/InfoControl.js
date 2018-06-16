@@ -3,16 +3,18 @@ import PropTypes from "prop-types";
 import Tag from "./tag";
 
 const InfoControl = props => {
-  let vehicleInfo = props.infoState.vehicleInfo;
+  let vehicle = props.infoState.vehicle;
+  let ignoreVehicle = props.infoState.ignoreVehicle;
   return (
     <div className="RichEditor_InfoControl">
-      {vehicleInfo.map(item => {
+      {vehicle.map(item => {
         return (
           <Tag
+            ignore={ignoreVehicle.length > 0 && ignoreVehicle.includes(item)}
             key={"tag_" + item}
-            closable
-            onClose={e => {
-              props.onToggle(item);
+            onClick={toIgnore => {
+              const actionName = toIgnore ? "ignoreVehicle" : "unIgnoreVehicle";
+              props.onClick(actionName, item);
             }}
           >
             {item}
@@ -25,7 +27,7 @@ const InfoControl = props => {
 
 InfoControl.propTypes = {
   infoState: PropTypes.object,
-  onToggle: PropTypes.func
+  onClick: PropTypes.func
 };
 
 export default InfoControl;

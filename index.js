@@ -1,5 +1,5 @@
-import React, { Component } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
-import VehicleEditor from "./components/vehicleEditor";
+import Editor1 from "./example/editor1";
 
-ReactDOM.render(<VehicleEditor />, document.getElementById("root"));
+ReactDOM.render(<Editor1 />, document.getElementById("root"));
