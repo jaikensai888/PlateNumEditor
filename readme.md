@@ -6,6 +6,7 @@
 
 ### propType
 
+- placeholder:str
 - onChange:Func(helper:Fuc)
 
   > help 提供的方法
