@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import VehicleEditor from "../lib/components/vehicleEditor";
+import VehicleEditor from "../src/components/vehicleEditor";
 
 class Editor1 extends Component {
   constructor(props) {
@@ -7,7 +7,7 @@ class Editor1 extends Component {
     this.onChange = this.onChange.bind(this);
   }
   onChange(params) {
-    console.log("index", params);
+    console.log("index", params.getContent());
   }
   render() {
     return <VehicleEditor onChange={this.onChange} />;
