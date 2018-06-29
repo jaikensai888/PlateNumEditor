@@ -1,22 +1,21 @@
 # jt-editor
 
-## usage
+## Usage
 
 > npm install jt-editor
 
-### propType
+### PropType
 
 - placeholder:str
 - onChange:Func(helper:Fuc)
 
-  > help 提供的方法
-
-  1.  getContent():获取 editor 内容
-  2.  getIgnoreVehicle():获取被忽略的车辆
-  3.  getVehicle():获取所有车辆
-  4.  getSelectedVehicle():获取选中的车辆
-
-## TODOList
+  ```js
+  getContent():获取 editor 内容
+  getIgnoreVehicle():获取被忽略的车辆
+  getVehicle():获取所有车辆
+  getSelectedVehicle():获取选中的车辆
+  ```
+## TodoList
 
 - VehicleEditor
 
@@ -24,7 +23,7 @@
 1.  增加提示说明
 1.  策略模式不能兼容相同策略
 
-## version log
+## Version
 
 ### ver 1.0.1
 
