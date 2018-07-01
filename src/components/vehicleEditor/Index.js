@@ -1,6 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Editor, EditorState, CompositeDecorator } from "draft-js";
+import {
+  Editor,
+  EditorState,
+  CompositeDecorator,
+  ContentState
+} from "draft-js";
 import "./style.css";
 import InfoControl from "./InfoControl";
 import { RegMatch, RegRule, LinkRegMatch } from "../../lib/recognizer";
@@ -10,24 +15,55 @@ const style = {};
 class VehicleEditor extends React.Component {
   constructor(props) {
     super(props);
-    //TODO:不能重复
-    const preStrategy = [
-      { regex: RegRule.vehicle.车牌, style: { color: "red" } }
-      // {
-      //   regex: RegRule.vehicle.连号车牌,
-      //   style: { borderBottom: "1px solid red" }
-      // }
-    ];
-    this.state = {
-      editorState: EditorState.createEmpty(
-        CreateDecorator("span", preStrategy)
-      ),
-      infoState: { vehicle: [], ignoreVehicle: [] }
-    }; //所有的车辆 //需要忽略的车辆
-
+    this.initRegRule = this.initRegRule.bind(this);
     this.onChange = this.onChange.bind(this);
     this.onClickInfoCtrl = this.onClickInfoCtrl.bind(this);
     this.onExtraChange = this.onExtraChange.bind(this);
+
+    this.initRegRule();
+
+    let me = this;
+    let defaultVehicle = RegMatch(
+      props.defaultContent,
+      ...me.regRule
+    ).distinctConcat(
+      props.recognizerConfig.连号车牌
+        ? LinkRegMatch(
+            editorState.getCurrentContent().getPlainText(),
+            RegRule.vehicle.连号车牌
+          )
+        : []
+    );
+    let defaultIgnoreVehicle = defaultVehicle.excludes(props.selectedVehicle);
+    this.state = {
+      editorState: EditorState.createWithContent(
+        ContentState.createFromText(props.defaultContent),
+        CreateDecorator("span", me.preStrategy)
+      ),
+      infoState: {
+        vehicle: defaultVehicle,
+        ignoreVehicle: defaultIgnoreVehicle
+      }
+    }; //所有的车辆 //需要忽略的车辆
+  }
+  initRegRule() {
+    let me = this,
+      config = this.props.recognizerConfig;
+    me.preStrategy = [];
+    me.regRule = [];
+    for (const key in config) {
+      if (config[key]) {
+        if (!RegRule.vehicle[key]) {
+          return;
+        }
+        let regex = RegRule.vehicle[key];
+        me.regRule.push(regex);
+        const reg = me.preStrategy.push({
+          regex: regex,
+          style: { color: "red" }
+        });
+      }
+    }
   }
   //外部方法
   onExtraChange() {
@@ -52,15 +88,17 @@ class VehicleEditor extends React.Component {
   }
   //editor内容修改
   onChange(editorState) {
+    let me = this;
     this.state.infoState.vehicle = RegMatch(
       editorState.getCurrentContent().getPlainText(),
-      RegRule.vehicle.车牌,
-      RegRule.vehicle.车架号
+      ...me.regRule
     ).distinctConcat(
-      LinkRegMatch(
-        editorState.getCurrentContent().getPlainText(),
-        RegRule.vehicle.连号车牌
-      )
+      me.props.recognizerConfig.连号车牌
+        ? LinkRegMatch(
+            editorState.getCurrentContent().getPlainText(),
+            RegRule.vehicle.连号车牌
+          )
+        : []
     );
     this.state.editorState = editorState;
     this.setState(this.state);
@@ -107,8 +145,19 @@ class VehicleEditor extends React.Component {
   }
 }
 VehicleEditor.propTypes = {
+  selectedVehicle: PropTypes.array,
+  defaultContent: PropTypes.string,
   onChange: PropTypes.func,
   placeholder: PropTypes.string
 };
-
+VehicleEditor.defaultProps = {
+  selectedVehicle: [],
+  defaultContent: "",
+  recognizerConfig: {
+    车牌: true,
+    车架号: true,
+    新能源车牌: false,
+    连号车牌: false
+  }
+};
 export default VehicleEditor;
