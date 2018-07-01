@@ -1,10 +1,10 @@
 # jt-editor
 
-## usage
+## Usage
 
 > npm install jt-editor
 
-### propType
+### PropType
 
 - placeholder:str
 - onChange:Func(helper:Fuc)
@@ -33,7 +33,7 @@
 2.  增加提示说明
 3.  策略模式不能兼容相同策略
 
-## version log
+## Version
 
 ### ver 1.0.2
 
