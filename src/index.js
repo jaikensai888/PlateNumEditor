@@ -1,2 +1,6 @@
 import VehicleEditor from "./components/vehicleEditor";
-export { VehicleEditor };
+import OrderEditor from "./components/orderEditor"
+export {
+    VehicleEditor,
+    OrderEditor
+};

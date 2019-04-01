@@ -16,6 +16,7 @@ function findWithRegex(regex, contentBlock, callback) {
   while ((matchArr = reg.exec(text)) !== null) {
     start = matchArr.index;
     callback(start, start + matchArr[0].length);
+    console.log("after CallBack",matchArr[0]);
   }
 }
 
@@ -27,6 +28,7 @@ export function CreateDecorator(domType, strategy) {
         findWithRegex(element.regex, contentBlock, callback);
       },
       component: props => {
+        console.log("render Component", props.decoratedText);
         return React.createElement(
           domType,
           { style: element.style },

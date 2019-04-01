@@ -8,9 +8,17 @@ import {
 } from "draft-js";
 import "./style.css";
 import InfoControl from "./InfoControl";
-import { RegMatch, RegRule, LinkRegMatch } from "../../lib/recognizer";
-import { ArrayExtension } from "../../lib/arrayExtension";
-import { CreateDecorator } from "../../lib/draftExtension.decoratorFactory";
+import {
+  RegMatch,
+  RegRule,
+  LinkRegMatch
+} from "../../lib/recognizer";
+import {
+  ArrayExtension
+} from "../../lib/arrayExtension";
+import {
+  CreateDecorator
+} from "../../lib/draftExtension.decoratorFactory";
 const style = {};
 class VehicleEditor extends React.Component {
   constructor(props) {
@@ -19,23 +27,22 @@ class VehicleEditor extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.onClickInfoCtrl = this.onClickInfoCtrl.bind(this);
     this.onExtraChange = this.onExtraChange.bind(this);
-
     this.initRegRule();
-
     let me = this;
     let defaultVehicle = RegMatch(
       props.defaultContent,
       ...me.regRule
     ).distinctConcat(
-      props.recognizerConfig.连号车牌
-        ? LinkRegMatch(
-            editorState.getCurrentContent().getPlainText(),
-            RegRule.vehicle.连号车牌
-          )
-        : []
+      props.recognizerConfig.连号车牌 ?
+        LinkRegMatch(
+          editorState.getCurrentContent().getPlainText(),
+          RegRule.vehicle.连号车牌
+        ) :
+        []
     );
     let defaultIgnoreVehicle = defaultVehicle.excludes(props.selectedVehicle);
     this.state = {
+      // editorState: EditorState.createEmpty(),
       editorState: EditorState.createWithContent(
         ContentState.createFromText(props.defaultContent),
         CreateDecorator("span", me.preStrategy)
@@ -48,7 +55,8 @@ class VehicleEditor extends React.Component {
   }
   initRegRule() {
     let me = this,
-      config = this.props.recognizerConfig;
+      config = this.props.recognizerConfig,
+      style = this.props.recognizerStyle;
     me.preStrategy = [];
     me.regRule = [];
     for (const key in config) {
@@ -58,9 +66,9 @@ class VehicleEditor extends React.Component {
         }
         let regex = RegRule.vehicle[key];
         me.regRule.push(regex);
-        const reg = me.preStrategy.push({
+        me.preStrategy.push({
           regex: regex,
-          style: { color: "red" }
+          style: style[key]
         });
       }
     }
@@ -93,12 +101,12 @@ class VehicleEditor extends React.Component {
       editorState.getCurrentContent().getPlainText(),
       ...me.regRule
     ).distinctConcat(
-      me.props.recognizerConfig.连号车牌
-        ? LinkRegMatch(
-            editorState.getCurrentContent().getPlainText(),
-            RegRule.vehicle.连号车牌
-          )
-        : []
+      me.props.recognizerConfig.连号车牌 ?
+        LinkRegMatch(
+          editorState.getCurrentContent().getPlainText(),
+          RegRule.vehicle.连号车牌
+        ) :
+        []
     );
     this.state.editorState = editorState;
     this.setState(this.state);
@@ -127,20 +135,19 @@ class VehicleEditor extends React.Component {
   }
 
   render() {
-    return (
-      <div className="RichEditor-root">
-        <InfoControl
-          infoState={this.state.infoState}
-          onClick={this.onClickInfoCtrl}
+    return (<div className="RichEditor-root" >
+      <InfoControl
+        infoState={this.state.infoState}
+        onClick={this.onClickInfoCtrl}
+      />
+      <div className="RichEditor-editor" >
+        <Editor
+          editorState={this.state.editorState}
+          onChange={this.onChange}
+          placeholder={this.props.placeholder}
         />
-        <div className="RichEditor-editor">
-          <Editor
-            editorState={this.state.editorState}
-            onChange={this.onChange}
-            placeholder={this.props.placeholder}
-          />
-        </div>
       </div>
+    </div>
     );
   }
 }
@@ -148,16 +155,24 @@ VehicleEditor.propTypes = {
   selectedVehicle: PropTypes.array,
   defaultContent: PropTypes.string,
   onChange: PropTypes.func,
-  placeholder: PropTypes.string
+  placeholder: PropTypes.string,
+  recognizerConfig: PropTypes.object,
+  recognizerStyle: PropTypes.object,
 };
 VehicleEditor.defaultProps = {
   selectedVehicle: [],
   defaultContent: "",
   recognizerConfig: {
-    车牌: true,
+    新能源车牌: true,
     车架号: true,
-    新能源车牌: false,
+    车牌: true,
     连号车牌: false
+  },
+  recognizerStyle: {
+    车牌: { color: "red" },
+    车架号: { color: "red" },
+    新能源车牌: { textDecoration: "underline" },
+    连号车牌: { color: "red" }
   }
 };
 export default VehicleEditor;
